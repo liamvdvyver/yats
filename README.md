@@ -1,29 +1,29 @@
 # Yet Another tmux-sessioniser
 
-A session manager based on !(ThePrimeagen's tmux-sessionizer)[https://github.com/ThePrimeagen/.dotfiles/blob/master/bin/.local/scripts/tmux-sessionizer]. Supports:
+A session manager based on [ThePrimeagen's tmuxsessionizer](https://github.com/ThePrimeagen/.dotfiles/blob/master/bin/.local/scripts/tmux-sessionizer). Supports:
 
 ## Features
 
 ### Sessioniser
 
 * Fuzzy find and switch to running sessions
-* Open !(tmuxifier)[https://github.com/jimeh/tmuxifier] layouts
+* Open [tmuxifier](https://github.com/jimeh/tmuxifier) layouts
 * Open sessions in directories along multiple search paths
 * Open sessions in individually specified directories
 * Run a specified command in its own directory
 
 ### Harpooniser (WIP)
 
-This is inspired by !(harpoon)[https://github.com/ThePrimeagen/harpoon] for neovim. The goal is to effectively group sessions when working on multiple related repos and allow quick navigation between them.
+This is inspired by [harpoon](https://github.com/ThePrimeagen/harpoon) for neovim. The goal is to effectively group sessions when working on multiple related repos and allow quick navigation between them.
 
 ## Installation
 
-Install with !(Tmux Package Manager)[https://github.com/tmux-plugins/tpm].
+Install with [Tmux Package Manager](https://github.com/tmux-plugins/tpm).
 
 ### Requirements
 
-* !(fzf)[https://github.com/junegunn/fzf] (optional)
-* !(tmuxifier)[https://github.com/jimeh/tmuxifier] (optional)
+* [fzf](https://github.com/junegunn/fzf) (optional)
+* [tmuxifier](https://github.com/jimeh/tmuxifier) (optional)
 
 ## Usage
 
