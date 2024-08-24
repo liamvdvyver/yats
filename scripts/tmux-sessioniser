@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+# taken from github.com/ThePrimeagen/.dotfiles
+# adapted to work with tmuxifier for custom layouts
+
+search_path="$YATS_PATH"
+exclude="$(echo "$YATS_EXCLUDE" | sort)"
+dirs="$YATS_DIRS"
+cmds="$YATS_CMDS"
+
+new_session_prompt="CREATE NEW SESSION"
+
+# How to modify name if open and reverse it
+open_sub='s/$/ */'
+reverse_open_sub='s/ \*$//'
+
+# GET SELECTION ----------------------------------------------------------------
+
+# Directly pass target name
+if [[ $# -eq 1 ]]; then
+    selected=$1
+else
+
+    # GET SESSION LIST ---------------------------------------------------------
+
+    # Search all dirs
+    path_results=""
+    for dir in $search_path; do
+        cur_results=$(comm -23 <(find "$dir" -mindepth 1 -maxdepth 1 -type d | sort) <(echo "$exclude"))
+        path_results="$(
+            echo "$path_results"
+            echo "$cur_results"
+        )"
+    done
+    # Add single dirs
+    path_results="$(
+        echo "$path_results"
+        echo "$dirs"
+    )"
+    # Format
+    path_results_cln=$(echo "$path_results" | xargs -rd '\n' basename -a)
+
+    # Tmuxifier defined sessions (should be same as repo name to override)
+    tmuxifier_sessions=$(tmuxifier list-sessions)
+
+    # Open sessions
+    open_sessions=$(tmux list-sessions 2>/dev/null | cut -d : -f 1)
+
+    # All options to search
+    results="$(
+        echo "$path_results_cln"
+        echo "$tmuxifier_sessions"
+        echo "$open_sessions"
+        echo "$cmds"
+    )"
+
+    results=$(echo "$results" | tr . _ | sort | uniq | sed '/^$/d')
+
+    # SEARCH -------------------------------------------------------------------
+
+    # Find open/closed sessions
+    not_open=$(comm -23 <(echo "$results" | sort) <(echo "$open_sessions" | sort))
+
+    if [ -n "$open_sessions" ]; then
+        open_session_fmt=$(echo "$open_sessions" | sed "$open_sub")
+    else
+        open_session_fmt=""
+    fi
+
+    opts_fmt="$(
+        echo "$new_session_prompt"
+        echo "$open_session_fmt"
+        echo "$not_open"
+    )"
+
+    selected=$(echo "$opts_fmt" | sed '/^$/d' | fzf)
+fi
+
+if [[ -z $selected ]]; then
+    exit 0
+fi
+
+if [ "$selected" = "$new_session_prompt" ]; then
+    printf "New session name: "
+    read -r selected
+fi
+
+# Unformat selection
+selected_raw=$(echo "$selected" | sed "$reverse_open_sub")
+selected=$(echo "$selected_raw" | tr . _)
+
+# OPEN SELECTION ---------------------------------------------------------------
+
+tmux_running=$(pgrep tmux)
+
+get_dir_from_selection() {
+    search_str="$(echo "$1" | sed 's/\./\\\./g')"
+    realpath "$(echo "$path_results" | grep "/$search_str/*$" | head -n 1)" 2>/dev/null
+}
+
+get_cmd_from_selection() {
+    echo "$cmds" | grep "^$1$" | head -n 1
+}
+
+switch_session() {
+    # attach if runninig in floating window
+    if [[ -n $TMUX ]]; then
+        tmux switch-client -t "$1"
+    else
+        tmux at -t "$1"
+    fi
+    exit 0
+}
+
+# Already has session
+if [[ -n "$TMUX$tmux_running" ]] && tmux has-session -t="$selected" 2>/dev/null; then
+    switch_session "$selected"
+
+# Tmuxifier session
+elif command -v tmuxifier 1>/dev/null && tmuxifier list-sessions | grep -qx "$selected"; then
+    tmuxifier load-session "$selected" 2>/dev/null
+    if [[ -n "$TMUX$tmux_running" ]]; then
+        switch_session "$selected" # tmuxifier autoswitches if not already in a session
+    fi
+    exit 0
+
+# Target directory
+elif target_dir=$(get_dir_from_selection "$selected") && [[ -n "$target_dir" ]]; then
+    tmux new-session -ds "$selected" -c "$target_dir"
+    switch_session "$selected"
+
+# Command
+elif target_cmd=$(get_cmd_from_selection "$selected") && [[ -n "$target_cmd" ]]; then
+    tmux new-session -ds "$selected" -c ~ "$target_cmd"
+    switch_session "$selected"
+
+# Selected is a dirname
+elif selected_asdir=$(realpath "$selected_raw") && [[ -d "$selected_asdir" ]]; then # Expand exact input
+    selected=$(basename "$selected_asdir")
+    if [[ -z "$TMUX$tmux_running" ]] || ! tmux has-session -t="$selected" 2>/dev/null; then
+        tmux new-session -ds "$selected" -c "$selected_asdir"
+    fi
+    switch_session "$selected"
+
+else
+    tmux new-session -ds "$selected" -c ~
+    switch_session "$selected"
+fi
