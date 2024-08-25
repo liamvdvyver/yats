@@ -33,7 +33,7 @@ path_results="$(
 path_results_cln=$(echo "$path_results" | xargs -rd '\n' basename -a)
 
 # Tmuxifier defined sessions (should be same as repo name to override)
-tmuxifier_sessions=$(tmuxifier list-sessions)
+tmuxifier_sessions=$(tmuxifier list-sessions 2>/dev/null || true)
 
 # Open sessions
 open_sessions=$(tmux list-sessions 2>/dev/null | cut -d : -f 1)
