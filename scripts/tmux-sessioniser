@@ -13,47 +13,48 @@ new_session_prompt="CREATE NEW SESSION"
 open_sub='s/$/ */'
 reverse_open_sub='s/ \*$//'
 
+# GET SESSION LIST ---------------------------------------------------------
+
+# Search all dirs
+path_results=""
+for dir in $search_path; do
+    cur_results=$(comm -23 <(find "$dir" -mindepth 1 -maxdepth 1 -type d | sort) <(echo "$exclude"))
+    path_results="$(
+        echo "$path_results"
+        echo "$cur_results"
+    )"
+done
+# Add single dirs
+path_results="$(
+    echo "$path_results"
+    echo "$dirs"
+)"
+# Format
+path_results_cln=$(echo "$path_results" | xargs -rd '\n' basename -a)
+
+# Tmuxifier defined sessions (should be same as repo name to override)
+tmuxifier_sessions=$(tmuxifier list-sessions)
+
+# Open sessions
+open_sessions=$(tmux list-sessions 2>/dev/null | cut -d : -f 1)
+
+# All options to search
+results="$(
+    echo "$path_results_cln"
+    echo "$tmuxifier_sessions"
+    echo "$open_sessions"
+    echo "$cmds"
+)"
+
+results=$(echo "$results" | tr . _ | sort | uniq | sed '/^$/d')
+
+
 # GET SELECTION ----------------------------------------------------------------
 
 # Directly pass target name
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
-
-    # GET SESSION LIST ---------------------------------------------------------
-
-    # Search all dirs
-    path_results=""
-    for dir in $search_path; do
-        cur_results=$(comm -23 <(find "$dir" -mindepth 1 -maxdepth 1 -type d | sort) <(echo "$exclude"))
-        path_results="$(
-            echo "$path_results"
-            echo "$cur_results"
-        )"
-    done
-    # Add single dirs
-    path_results="$(
-        echo "$path_results"
-        echo "$dirs"
-    )"
-    # Format
-    path_results_cln=$(echo "$path_results" | xargs -rd '\n' basename -a)
-
-    # Tmuxifier defined sessions (should be same as repo name to override)
-    tmuxifier_sessions=$(tmuxifier list-sessions)
-
-    # Open sessions
-    open_sessions=$(tmux list-sessions 2>/dev/null | cut -d : -f 1)
-
-    # All options to search
-    results="$(
-        echo "$path_results_cln"
-        echo "$tmuxifier_sessions"
-        echo "$open_sessions"
-        echo "$cmds"
-    )"
-
-    results=$(echo "$results" | tr . _ | sort | uniq | sed '/^$/d')
 
     # SEARCH -------------------------------------------------------------------
 
