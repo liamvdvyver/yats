@@ -2,10 +2,14 @@
 # taken from github.com/ThePrimeagen/.dotfiles
 # adapted to work with tmuxifier for custom layouts
 
-search_path="$YATS_PATH"
-exclude="$(echo "$YATS_EXCLUDE" | sort)"
-dirs="$YATS_DIRS"
-cmds="$YATS_CMDS"
+option() {
+    tmux show-option -gqv "@$1"
+}
+
+search_path="$(option yats-path)"
+exclude="$(option yats-exclude | sort)"
+dirs="$(option yats-dirs)"
+cmds="$(option yats-cmds)"
 
 new_session_prompt="CREATE NEW SESSION"
 
@@ -47,7 +51,6 @@ results="$(
 )"
 
 results=$(echo "$results" | tr . _ | sort | uniq | sed '/^$/d')
-
 
 # GET SELECTION ----------------------------------------------------------------
 

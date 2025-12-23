@@ -34,18 +34,13 @@ Install with [Tmux Package Manager](https://github.com/tmux-plugins/tpm).
 
 ## Configuration
 
-Supports the following tmux settings:
+Supports the following tmux settings (multiple values should be newline delimited):
 
-| Option                        | Default   | Behaviour                 |
-| ---                           | ---       | ---                       |
-| `@sessionise-bind`            | `S`       | Key to lanch fuzzy finder |
-
-Configure by setting the following environment variables:
-
-| Variable        | Behaviour                 |
-| ---             | ---                       |
-| `$YATS_PATH`    | Paths to search in (all immediate subdirectories will appear in the fuzzy finder) |
-| `$YATS_EXCLUDE` | Paths to exclude from the search |
-| `$YATS_DIRS`    | Individual paths added to the fuzzy finder |
-| `$YATS_CMDS`    | Commands added to the fuzzy finder |
+| Option             | Default | Behaviour                                                                         |
+| ---                | ---     | ---                                                                               |
+| `@yats-bind`       | `S`     | Key to lanch fuzzy finder                                                         |
+| `@yats-path`       |         | Paths to search in (all immediate subdirectories will appear in the fuzzy finder) |
+| `@yats-exclude   ` |         | Paths to exclude from the search                                                  |
+| `@yats-dirs`       |         | Individual paths added to the fuzzy finder                                        |
+| `@yats-cmds`       |         | Commands added to the fuzzy finder                                                |
 
