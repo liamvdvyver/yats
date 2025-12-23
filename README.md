@@ -1,6 +1,6 @@
 # Yet Another tmux-sessioniser
 
-A session manager based on [ThePrimeagen's tmux-sessionizer](https://github.com/ThePrimeagen/.dotfiles/blob/master/bin/.local/scripts/tmux-sessionizer). Supports:
+A session manager based on [ThePrimeagen's tmux-sessionizer](https://github.com/ThePrimeagen/.dotfiles/blob/master/bin/.local/scripts/tmux-sessionizer).
 
 ## Features
 
@@ -11,10 +11,6 @@ A session manager based on [ThePrimeagen's tmux-sessionizer](https://github.com/
 * Open sessions in directories along multiple search paths
 * Open sessions in individually specified directories
 * Run a specified command in its own directory
-
-### Harpooniser (WIP)
-
-This is inspired by [harpoon](https://github.com/ThePrimeagen/harpoon) for neovim. The goal is to effectively group sessions when working on multiple related repos and allow quick navigation between them.
 
 ## Installation
 
@@ -35,7 +31,6 @@ Install with [Tmux Package Manager](https://github.com/tmux-plugins/tpm).
     * A specified command (see configuration)
     * An other directory (e.g. `tmux-sessioniser .`)
     * Otherwise, a name for a new session in `~`
-* `<clone path>/plugins/tmux-harpooniser`: work in progress
 
 ## Configuration
 
@@ -44,8 +39,6 @@ Supports the following tmux settings:
 | Option                        | Default   | Behaviour                 |
 | ---                           | ---       | ---                       |
 | `@sessionise-bind`            | `S`       | Key to lanch fuzzy finder |
-| `@harpooniser-append-bind`    | `M`       | WIP                       |
-| `@harpooniser-edit-bind`      | `m`       | WIP                       |
 
 Configure by setting the following environment variables:
 
@@ -56,4 +49,3 @@ Configure by setting the following environment variables:
 | `$YATS_DIRS`    | Individual paths added to the fuzzy finder |
 | `$YATS_CMDS`    | Commands added to the fuzzy finder |
 
-`tmux-harpooniser` is not currently configurable.
